@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Build with Maven
+      run: mvn -B clean compile -Dmaven.test.skip=true -Djava.awt.headless=true
+
+    - name: Run tests with coverage
+      run: mvn -B test jacoco:report -Djava.awt.headless=true || true
+
+    - name: Show coverage summary
+      run: |
+        if [ -f target/site/jacoco/jacoco.csv ]; then
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          awk -F',' 'NR>1 {missed+=$4; covered+=$5} END {total=missed+covered; if(total>0) printf "Line Coverage: %d/%d (%.1f%%)\nMissed: %d lines\n", covered, total, covered*100/total, missed; else print "No coverage data"}' target/site/jacoco/jacoco.csv >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No JaCoCo coverage report found" >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: target/site/jacoco/jacoco.xml
+        fail_ci_if_error: false
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
