@@ -11,7 +11,7 @@
 
     <properties>
         <spring.version>6.2.5</spring.version>
-        <spring.security.version>6.4.4</spring.security.version>
+        <spring.security.version>6.4.5</spring.security.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
