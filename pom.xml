@@ -10,8 +10,8 @@
     <name>webissues</name>
 
     <properties>
-        <spring.version>6.2.5</spring.version>
-        <spring.security.version>6.4.4</spring.security.version>
+        <spring.version>6.2.11</spring.version>
+        <spring.security.version>6.4.11</spring.security.version>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.hint.deploy.server>Tomcat</netbeans.hint.deploy.server>
